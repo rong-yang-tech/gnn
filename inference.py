@@ -62,7 +62,7 @@ with torch.no_grad():
         # print(outputs)
         unique_indices = torch.unique(data.batch)
     
-        # 存储分割后的子张量
+        # save grouped tensor
         grouped_tensors = []
         
         for idx in unique_indices:
@@ -75,7 +75,7 @@ with torch.no_grad():
         # print(outputs.detach().cpu().numpy().shape)
         inference_results.extend(outputs.detach().cpu().numpy())
 
-        #
+        #attention figure
         # for draw_name in data.name:
         #     # print(draw_name)
         #     for i in define_draw_name:
