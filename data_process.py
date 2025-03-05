@@ -29,7 +29,7 @@ def rename_files(directory, old_ext, new_ext):
             new_name = os.path.join(directory, filename.replace(old_ext, new_ext))
             os.rename(old_name, new_name)
  
-# 调用函数，将所有.txt文件改为.md
+# .txt to_.md
 rename_files(directory_path , '.inp.dat', '.out')        
 
 delete_folder_recursive('initial_data')
