@@ -143,38 +143,38 @@ def mbtr_desc(path, name):
 
 class DualOutput():
     """
-    一个类，用于将标准输出同时重定向到控制台和一个文本文件。
+    print console
     """
     def __init__(self, filename, mode='w', encoding='utf-8'):
         """
-        初始化 DualOutput 对象。
+        initial DualOutput object。
 
-        :param filename: 输出文件的路径。
-        :param mode: 文件打开模式，默认为追加模式 'a'。
-        :param encoding: 文件编码方式，默认为 'utf-8'。
+        :param filename: print file
+        :param mode: 'a'。
+        :param encoding: 'utf-8'
         """
-        self.console = sys.stdout  # 保存原始的标准输出
-        self.file = open(filename, mode, encoding=encoding)  # 打开文件
+        self.console = sys.stdout  # save original output
+        self.file = open(filename, mode, encoding=encoding)  # open file
 
     def write(self, message):
         """
-        将消息写入控制台和文件。
+        write to console and file
 
-        :param message: 要写入的字符串消息。
+        :param message: str。
         """
-        self.console.write(message)  # 写入控制台
-        self.file.write(message)     # 写入文件
+        self.console.write(message)  # console
+        self.file.write(message)     # file
 
     def flush(self):
         """
-        刷新输出缓冲区，确保所有内容都被写出。
+        all output
         """
         self.console.flush()
         self.file.flush()
 
     def close(self):
         """
-        关闭文件句柄。
+        close
         """
         self.file.close()
         
