@@ -49,7 +49,7 @@ except:
     factory = ChemicalFeatures.BuildFeatureFactory(fdefName)
     
 def delete_folder_recursive(folder_path):
-    """删除指定路径的文件夹及其下所有文件和子文件夹"""
+    """delete folder path and file"""
     if os.path.isdir(folder_path):
         shutil.rmtree(folder_path)
     elif os.path.exists(folder_path):
@@ -57,10 +57,10 @@ def delete_folder_recursive(folder_path):
         
 from utils import DualOutput        
 # ob_log_handler = openbabel.OBMessageHandler()
-# ob_log_handler.SetOutputLevel(0)  # 设置为 0 以忽略所有消息
+# ob_log_handler.SetOutputLevel(0)  # set as 0 negative
 # openbabel.obErrorLog.SetOutputLevel(0)
 
-# 4. 定义获取独热编码的函数
+# 4.one hot encoding
 
         
 class CustomGraphDataset(InMemoryDataset):
@@ -78,20 +78,20 @@ class CustomGraphDataset(InMemoryDataset):
         
     @property
     def raw_file_names(self):
-        # 返回原始文件的文件名列表，如果没有原始文件则返回空列表
+        # back original file name or empty list
         return []
     @property
     def processed_file_names(self):
-        # 返回预处理文件的文件名列表，如果没有预处理文件则返回空列表
+        # back pre-list or empty list
         return ['data.pt']
     
     # @property
     # def soap_truancate(self):
-    #     # 返回预处理文件的文件名列表，如果没有预处理文件则返回空列表
+    #     # back pre-list or empty list
     #     return self.soap_truancate
 
     def download(self):
-        # 如果需要，可以在此处下载原始数据
+        # if need
         pass
     
     def get_atom_pair_type(self):
@@ -102,7 +102,7 @@ class CustomGraphDataset(InMemoryDataset):
         atom_type = ['H', 'C', 'N', 'O', 'F',  'Cl', 'Br', 'I']
         pair_types = ["-".join(sorted(pair)) for pair in combinations_with_replacement(atom_type, 2)]
         #print(len(pair_types))
-        # 3. 创建独热编码映射表
+        # 3. one hot
         pair_to_index = {pair: i for i, pair in enumerate(pair_types)}
         #num_pairs = len(pair_types)
         ##one_hot_vector = np.zeros(num_pairs)
@@ -147,7 +147,7 @@ class CustomGraphDataset(InMemoryDataset):
             #
             cbond = c
             rbond = r
-            # r 相同键replusion，c不同键connect
+            # r  same atoms --replusion, dif atoms ---connect
             num_bc = numc
             num_br = numr
     
@@ -193,7 +193,7 @@ class CustomGraphDataset(InMemoryDataset):
         # print(len(distan_sort))
         # print(atom_sim_axis)
     
-        # '****统计距离范围键长'
+        # '****distance in dif-range'
         # #
         dis_new = []
         dis_repul1 = []
@@ -278,21 +278,21 @@ class CustomGraphDataset(InMemoryDataset):
     
     def calculate_inertia_angle_between_atoms(self, atoms1, atoms2):
         """
-        计算两个 ASE Atoms 对象的主惯性轴之间的夹角（度数）。
+        ASE Atoms p-axes angles
         
-        参数:
-        atoms1 -- 第一个 ASE Atoms 对象
-        atoms2 -- 第二个 ASE Atoms 对象
         
-        返回:
-        angles -- 一个列表，包含每对主惯性轴之间的夹角（度数）
+        atoms1 -- first ASE Atoms
+        atoms2 -- second ASE Atoms
+        
+        back:
+        angles -- list
         """
-        # 定义内部函数来计算主惯性轴
+        # def angles
         def get_inertia_tensor(atoms):
             positions = atoms.get_positions()
             masses = atoms.get_masses()
             center_of_mass = np.sum(masses[:, None] * positions, axis=0) / np.sum(masses)
-            positions -= center_of_mass  # 平移到质心坐标系
+            positions -= center_of_mass  # center
             
             Ixx = np.sum(masses * (positions[:, 1]**2 + positions[:, 2]**2))
             Iyy = np.sum(masses * (positions[:, 0]**2 + positions[:, 2]**2))
@@ -309,18 +309,18 @@ class CustomGraphDataset(InMemoryDataset):
         def get_principal_axes(atoms):
             inertia_tensor = get_inertia_tensor(atoms)
             _, eigenvectors = np.linalg.eigh(inertia_tensor)
-            return eigenvectors  # 主惯性轴的方向（列向量）
+            return eigenvectors  # vector
     
-        # 获取两个 Atoms 对象的主惯性轴
+        # axes
         axes1 = get_principal_axes(atoms1)
         axes2 = get_principal_axes(atoms2)
         
-        # 计算每对对应主惯性轴的夹角
+        # calculate angles
         angles = []
         for i in range(3):
             dot_product = np.dot(axes1[:, i], axes2[:, i])
-            angle = np.arccos(np.clip(dot_product, -1.0, 1.0))  # 夹角防止超出[-1, 1]范围
-            angles.append(np.degrees(angle))  # 转换为角度
+            angle = np.arccos(np.clip(dot_product, -1.0, 1.0))  # [-1, 1]
+            angles.append(np.degrees(angle))  #turn to angle
         
         return angles
     
@@ -347,9 +347,9 @@ class CustomGraphDataset(InMemoryDataset):
                     min_distance = distance
                     closest_pair = (symbol1, symbol2)
 
-        # 输出最近邻原子对的类型和距离
-        #print(f"最近邻原子对: {closest_pair[0]} - {closest_pair[1]}")
-        #print(f"最短距离: {min_distance:.4f} Å")
+        # nearest atoms type, distance
+        #print(f"type: {closest_pair[0]} - {closest_pair[1]}")
+        #print(f"distance: {min_distance:.4f} Å")
         #print(type(np.array([min_distance])))
         
         return self.one_of_k_encoding("-".join(sorted(closest_pair)), self.get_atom_pair_type()), [min_distance], \
@@ -430,7 +430,7 @@ class CustomGraphDataset(InMemoryDataset):
                     data = Data(x=node_mat_tot, edge_attr=edge_mat_tot, 
                                 edge_index=edge_index, edge_weight=edge_weight, 
                                 y=y, u_soap=u_soap, u_dimer = u_dimer, 
-                                name = config, rdkit_mol = [a1, a2])       # 根据需要创建图数据
+                                name = config, rdkit_mol = [a1, a2])       # if need grpah data
                   
                     data_list.append(data)
                     print('*'*30)
@@ -508,7 +508,7 @@ class CustomGraphDataset(InMemoryDataset):
                     data = Data(x=node_mat_tot, edge_attr=edge_mat_tot, 
                                 edge_index=edge_index, edge_weight=edge_weight, 
                                 u_soap=u_soap, u_dimer = u_dimer, 
-                                name = config, rdkit_mol = [a1, a2])       # 根据需要创建图数据
+                                name = config, rdkit_mol = [a1, a2])       # if need graph data
                   
                     data_list.append(data)
                     print('*'*30)
