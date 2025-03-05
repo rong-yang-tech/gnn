@@ -212,13 +212,14 @@ class Graph():
         """
         #
         #atom_types= ['H','C','N','O','F','Cl','Br','I']
-        # atoms = self.mol.GetAtoms()
+        atoms = self.mol.GetAtoms()
 
-        # atoms_list =[]
-        # for i in atoms:
-        #     atom = i.GetSymbol()##
-        #     atoms_list.append(atom)#LIST
-        # #print(atoms_list)
+        atoms_list =[]
+        for i in atoms:
+            atom = i.GetSymbol()##
+            atoms_list.append(atom)#LIST
+        #print(atoms_list)
+        
         # #
         # node_mat = np.zeros((len(atoms_list), len(self.atom_type)))
         # for i, atom in enumerate(atoms_list):
@@ -261,7 +262,7 @@ class Graph():
         # print(edge_mat.shape)
         
 
-        # reate adjacency matrix
+        # create adjacency matrix
         adj_mat = rdmolops.GetAdjacencyMatrix(self.mol)
         # print(adj_mat.shape)
         self.std_adj_mat = np.copy(adj_mat)
